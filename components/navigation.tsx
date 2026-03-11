@@ -184,7 +184,11 @@ export function Navigation() {
             : "bg-transparent"
         )}
       >
-        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <motion.nav 
+          animate={{ opacity: scrollOpacity }}
+          transition={{ duration: 0.2 }}
+          className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6"
+        >
           {/* Logo */}
           <button
             onClick={() => handleNavClick("#home")}
@@ -219,7 +223,7 @@ export function Navigation() {
             ))}
           </ul>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button (outside fade animation for visibility) */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
@@ -231,7 +235,7 @@ export function Navigation() {
               <Menu className="h-5 w-5" />
             )}
           </button>
-        </nav>
+        </motion.nav>
       </motion.header>
 
       {/* Mobile Menu */}
