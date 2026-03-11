@@ -6,7 +6,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-sm text-muted-foreground">
-            {currentYear} Udayveet Singh. All rights reserved.
+            {currentYear} Udayveer Singh. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
             Built with Next.js & Tailwind CSS

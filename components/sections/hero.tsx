@@ -24,7 +24,7 @@ export function Hero() {
 
         <FadeIn delay={0.1}>
           <h1 className="mb-6 text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
-            Udayveet Singh
+            Udayveer Singh
           </h1>
         </FadeIn>
 
