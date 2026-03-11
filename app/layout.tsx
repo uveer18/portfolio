@@ -13,9 +13,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Udayveet Singh | Machine Learning Engineer & Photographer",
+  title: "Udayveer Singh | Machine Learning Engineer & Photographer",
   description:
-    "Portfolio of Udayveet Singh - Machine Learning Engineer specializing in image deep learning and artistic photography. Building AI tools that bridge technology and visual art.",
+    "Portfolio of Udayveer Singh - Machine Learning Engineer specializing in image deep learning and artistic photography. Building AI tools that bridge technology and visual art.",
   keywords: [
     "Machine Learning",
     "AI",
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     "Computer Vision",
     "Image Processing",
   ],
-  authors: [{ name: "Udayveet Singh" }],
+  authors: [{ name: "Udayveer Singh" }],
   openGraph: {
-    title: "Udayveet Singh | Machine Learning Engineer & Photographer",
+    title: "Udayveer Singh | Machine Learning Engineer & Photographer",
     description:
       "Building AI tools and capturing artistic photography. Specializing in image deep learning and visual art.",
     type: "website",

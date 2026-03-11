@@ -17,10 +17,16 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [scrollOpacity, setScrollOpacity] = useState(1);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      
+      // Calculate opacity based on scroll position (fade effect)
+      const maxScroll = 200;
+      const opacity = Math.max(0.6, 1 - (window.scrollY / maxScroll) * 0.4);
+      setScrollOpacity(opacity);
 
       // Update active section based on scroll position
       const sections = navLinks.map((link) => link.href.substring(1));
@@ -48,7 +54,10 @@ export function Navigation() {
 
   return (
     <>
-      <header
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: scrollOpacity, y: 0 }}
+        transition={{ duration: 0.3 }}
         className={cn(
           "fixed left-0 right-0 top-0 z-40 transition-all duration-300",
           isScrolled
@@ -104,7 +113,7 @@ export function Navigation() {
             )}
           </button>
         </nav>
-      </header>
+      </motion.header>
 
       {/* Mobile Menu */}
       <AnimatePresence>

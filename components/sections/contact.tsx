@@ -1,27 +1,39 @@
 "use client";
 
 import { FadeIn } from "@/components/ui/motion";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin, Mail, Instagram } from "lucide-react";
 import { motion } from "framer-motion";
 
 const links = [
   {
     name: "GitHub",
-    href: "https://github.com/udayveet",
+    href: "https://github.com/uveer18",
     icon: Github,
-    label: "@udayveet",
+    label: "@uveer18",
   },
   {
     name: "LinkedIn",
-    href: "https://linkedin.com/in/udayveet",
+    href: "https://linkedin.com/in/uveer18",
     icon: Linkedin,
-    label: "Udayveet Singh",
+    label: "Udayveer Singh",
   },
   {
     name: "Email",
-    href: "mailto:hello@udayveet.com",
+    href: "mailto:uday.work@gmail.com",
     icon: Mail,
-    label: "hello@udayveet.com",
+    label: "uday.work@gmail.com",
+  },
+  {
+    name: "Instagram",
+    href: "https://instagram.com/udayveer.singh06",
+    icon: Instagram,
+    label: "@udayveer.singh06",
+  },
+  {
+    name: "Photography",
+    href: "https://instagram.com/soltragrv",
+    icon: Instagram,
+    label: "@soltragrv",
   },
 ];
 
