@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "./theme-provider";
@@ -31,7 +31,7 @@ export function Navigation() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-      
+
       const maxScroll = 200;
       const opacity = Math.max(0.6, 1 - (window.scrollY / maxScroll) * 0.4);
       setScrollOpacity(opacity);
@@ -39,24 +39,24 @@ export function Navigation() {
       const sections = navLinks.map((link) => link.href.substring(1));
       for (const section of sections.reverse()) {
         const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 150) {
-            setActiveSection(section);
-            break;
-          }
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+        if (rect.top <= 150) {
+          setActiveSection(section);
+          break;
         }
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleNavClick = (href: string) => {
     setIsMobileMenuOpen(false);
-    const element = document.getElementById(href.substring(1));
-    element?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById(href.substring(1))?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -72,15 +72,14 @@ export function Navigation() {
             : "bg-transparent"
         )}
       >
-        <motion.nav 
+        <motion.nav
           animate={{ opacity: scrollOpacity }}
           transition={{ duration: 0.2 }}
           className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6"
         >
-          {/* Logo - Animated name */}
           <button
             onClick={() => handleNavClick("#home")}
-            className="relative text-lg font-semibold text-foreground transition-colors hover:text-muted-foreground overflow-hidden"
+            className="relative overflow-hidden text-lg font-semibold text-foreground transition-colors hover:text-muted-foreground"
           >
             <AnimatePresence mode="wait">
               {isHeroVisible ? (
@@ -90,16 +89,19 @@ export function Navigation() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -20, opacity: 0 }}
                   transition={{ duration: 0.3 }}
+                  className="block"
                 >
                   US
                 </motion.span>
               ) : (
                 <motion.span
                   key="fullname"
+                  layoutId="hero-name"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -20, opacity: 0 }}
                   transition={{ duration: 0.3 }}
+                  className="block"
                 >
                   Udayveer Singh
                 </motion.span>
@@ -107,7 +109,6 @@ export function Navigation() {
             </AnimatePresence>
           </button>
 
-          {/* Desktop Navigation */}
           <ul className="hidden items-center gap-1 md:flex">
             <li>
               <button
@@ -115,11 +116,7 @@ export function Navigation() {
                 className="mr-2 rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label="Toggle theme"
               >
-                {mounted && theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
+                {mounted && theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
             </li>
             {navLinks.map((link) => (
@@ -146,22 +143,16 @@ export function Navigation() {
             ))}
           </ul>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
             aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </motion.nav>
       </motion.header>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -178,11 +169,7 @@ export function Navigation() {
                     onClick={toggleTheme}
                     className="flex w-full items-center gap-2 rounded-lg px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
-                    {mounted && theme === "dark" ? (
-                      <Sun className="h-4 w-4" />
-                    ) : (
-                      <Moon className="h-4 w-4" />
-                    )}
+                    {mounted && theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                     {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
                   </button>
                 </li>

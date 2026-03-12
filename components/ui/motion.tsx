@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { motion, type HTMLMotionProps, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useRef } from "react";
 
 interface FadeInProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
@@ -30,6 +31,34 @@ export function FadeIn({
     >
       {children}
     </motion.div>
+  );
+}
+
+export function ViewportFadeSection({
+  children,
+  className,
+  id,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, {
+    margin: "0px 0px -33% 0px",
+    amount: 0,
+  });
+
+  return (
+    <motion.section
+      ref={ref}
+      id={id}
+      className={cn(className)}
+      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 30 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      {children}
+    </motion.section>
   );
 }
 
