@@ -1,6 +1,6 @@
 "use client";
 
-import { FadeIn } from "@/components/ui/motion";
+import { FadeIn, ViewportFadeSection } from "@/components/ui/motion";
 import { Github, Linkedin, Mail, Instagram } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -39,7 +39,7 @@ const links = [
 
 export function Contact() {
   return (
-    <section id="contact" className="px-6 py-24 md:py-32">
+    <ViewportFadeSection id="contact" className="px-6 py-24 md:py-32">
       <div className="mx-auto max-w-4xl">
         <FadeIn>
           <div className="mb-16 flex items-center gap-4">
@@ -80,6 +80,6 @@ export function Contact() {
           </div>
         </FadeIn>
       </div>
-    </section>
+    </ViewportFadeSection>
   );
 }

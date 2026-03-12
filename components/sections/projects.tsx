@@ -1,6 +1,6 @@
 "use client";
 
-import { FadeIn, FadeInStagger, FadeInStaggerItem } from "@/components/ui/motion";
+import { FadeIn, FadeInStagger, FadeInStaggerItem, ViewportFadeSection } from "@/components/ui/motion";
 import { ExternalLink, Github } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -98,7 +98,7 @@ function ProjectCard({
 
 export function Projects() {
   return (
-    <section id="projects" className="px-6 py-24 md:py-32">
+    <ViewportFadeSection id="projects" className="px-6 py-24 md:py-32">
       <div className="mx-auto max-w-6xl">
         <FadeIn>
           <div className="mb-16 flex items-center gap-4">
@@ -125,6 +125,6 @@ export function Projects() {
           ))}
         </FadeInStagger>
       </div>
-    </section>
+    </ViewportFadeSection>
   );
 }

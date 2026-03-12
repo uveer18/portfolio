@@ -1,22 +1,19 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface HeroContextType {
   isHeroVisible: boolean;
   setIsHeroVisible: (visible: boolean) => void;
-  heroNamePosition: { x: number; y: number } | null;
-  setHeroNamePosition: (pos: { x: number; y: number } | null) => void;
 }
 
 const HeroContext = createContext<HeroContextType | null>(null);
 
 export function HeroProvider({ children }: { children: React.ReactNode }) {
   const [isHeroVisible, setIsHeroVisible] = useState(true);
-  const [heroNamePosition, setHeroNamePosition] = useState<{ x: number; y: number } | null>(null);
 
   return (
-    <HeroContext.Provider value={{ isHeroVisible, setIsHeroVisible, heroNamePosition, setHeroNamePosition }}>
+    <HeroContext.Provider value={{ isHeroVisible, setIsHeroVisible }}>
       {children}
     </HeroContext.Provider>
   );

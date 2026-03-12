@@ -1,6 +1,6 @@
 "use client";
 
-import { FadeIn, FadeInStagger, FadeInStaggerItem } from "@/components/ui/motion";
+import { FadeIn, FadeInStagger, FadeInStaggerItem, ViewportFadeSection } from "@/components/ui/motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -135,7 +135,7 @@ export function Photography() {
   }, []);
 
   return (
-    <section id="photography" className="px-6 py-24 md:py-32">
+    <ViewportFadeSection id="photography" className="px-6 py-24 md:py-32">
       <div className="mx-auto max-w-6xl">
         <FadeIn>
           <div className="mb-16 flex items-center gap-4">
@@ -168,6 +168,6 @@ export function Photography() {
           <Lightbox photo={selectedPhoto} onClose={handleClose} />
         )}
       </AnimatePresence>
-    </section>
+    </ViewportFadeSection>
   );
 }

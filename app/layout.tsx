@@ -1,17 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { HeroProvider } from "@/components/hero-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-});
 
 export const metadata: Metadata = {
   title: "Udayveer Singh | Machine Learning Engineer & Photographer",
@@ -46,10 +36,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en">
       <body className="min-h-screen antialiased transition-colors duration-300">
-          <ThemeProvider>{children}</ThemeProvider>
-        </body>
+        <ThemeProvider>
+          <HeroProvider>{children}</HeroProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { FadeIn } from "@/components/ui/motion";
+import { FadeIn, ViewportFadeSection } from "@/components/ui/motion";
 import { ArrowUpRight } from "lucide-react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const posts = [
   {
@@ -36,15 +36,17 @@ const posts = [
   },
 ];
 
-function BlogCard({ post, isHighlighted }: { post: (typeof posts)[number]; isHighlighted: boolean }) {
+type AnimatedPost = (typeof posts)[number] & { key: string };
+
+function BlogCard({ post }: { post: AnimatedPost }) {
   return (
     <motion.article
-      animate={{ 
-        scale: isHighlighted ? 1.02 : 1,
-        backgroundColor: isHighlighted ? "var(--color-muted)" : "transparent"
-      }}
-      transition={{ duration: 0.3 }}
-      className="group flex items-start justify-between gap-4 border-b border-border py-6 last:border-0 rounded-lg px-4 transition-all"
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -24 }}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
+      className="group flex items-start justify-between gap-4 rounded-lg border-b border-border px-4 py-6 last:border-0"
     >
       <div className="flex-1">
         <div className="mb-2 flex items-center gap-3">
@@ -56,9 +58,7 @@ function BlogCard({ post, isHighlighted }: { post: (typeof posts)[number]; isHig
         <h3 className="mb-2 text-lg font-medium text-foreground transition-colors group-hover:text-accent">
           {post.title}
         </h3>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {post.description}
-        </p>
+        <p className="text-sm leading-relaxed text-muted-foreground">{post.description}</p>
       </div>
       <ArrowUpRight className="mt-1 h-5 w-5 flex-shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
     </motion.article>
@@ -66,93 +66,69 @@ function BlogCard({ post, isHighlighted }: { post: (typeof posts)[number]; isHig
 }
 
 export function Blog() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const isInView = useInView(sectionRef, { 
-    margin: "-33% 0px -33% 0px",
-    amount: 0
-  });
-  const isContainerInView = useInView(containerRef, { amount: 0.3 });
+  const [queue, setQueue] = useState<AnimatedPost[]>(() =>
+    posts.map((post, index) => ({ ...post, key: `${post.title}-${index}` }))
+  );
+  const seedRef = useRef(posts.length);
 
-  // Auto-scroll through blog posts when section is in view
   useEffect(() => {
-    if (!isContainerInView) return;
-    
     const interval = setInterval(() => {
-      setHighlightedIndex((prev) => (prev + 1) % posts.length);
+      setQueue((prev) => {
+        const [first, ...rest] = prev;
+        if (!first) return prev;
+
+        const sourceIndex = posts.findIndex((post) => post.title === first.title);
+        const nextIndex = (sourceIndex + 1) % posts.length;
+        const nextPost = posts[nextIndex];
+        const key = `${nextPost.title}-${seedRef.current}`;
+        seedRef.current += 1;
+
+        return [...rest, { ...nextPost, key }];
+      });
     }, 3000);
-    
+
     return () => clearInterval(interval);
-  }, [isContainerInView]);
+  }, []);
+
+  const activeIndex = useMemo(() => posts.findIndex((post) => post.title === queue[0]?.title), [queue]);
 
   return (
-    <motion.section 
-      ref={sectionRef}
-      id="blog" 
-      className="px-6 py-24 md:py-32"
-      animate={{ 
-        opacity: isInView ? 1 : 0,
-        y: isInView ? 0 : 30
-      }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-    >
+    <ViewportFadeSection id="blog" className="px-6 py-24 md:py-32">
       <div className="mx-auto max-w-4xl">
         <FadeIn>
           <div className="mb-16 flex items-center gap-4">
             <span className="h-px flex-1 bg-border" />
-            <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
-              Blog
-            </h2>
+            <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">Blog</h2>
             <span className="h-px flex-1 bg-border" />
           </div>
         </FadeIn>
 
         <FadeIn>
           <p className="mx-auto mb-12 max-w-2xl text-center text-lg text-muted-foreground">
-            Thoughts and explorations at the intersection of AI, machine
-            learning, and photography.
+            Thoughts and explorations at the intersection of AI, machine learning, and photography.
           </p>
         </FadeIn>
 
         <FadeIn>
-          <div 
-            ref={containerRef}
-            className="rounded-xl border border-border bg-card p-2 relative overflow-hidden"
-          >
-            {/* Scroll indicator */}
+          <div className="relative overflow-hidden rounded-xl border border-border bg-card p-2">
             <div className="absolute right-4 top-4 flex gap-1">
               {posts.map((_, i) => (
                 <motion.div
                   key={i}
-                  animate={{ 
-                    backgroundColor: i === highlightedIndex 
-                      ? "var(--color-accent)" 
-                      : "var(--color-border)"
-                  }}
+                  animate={{ backgroundColor: i === activeIndex ? "var(--color-accent)" : "var(--color-border)" }}
                   className="h-1.5 w-1.5 rounded-full"
                 />
               ))}
             </div>
-            
-            <AnimatePresence>
-              {posts.map((post, index) => (
-                <motion.div
-                  key={post.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0,
-                  }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <BlogCard post={post} isHighlighted={index === highlightedIndex} />
-                </motion.div>
+
+            <AnimatePresence initial={false} mode="popLayout">
+              {queue.map((post) => (
+                <BlogCard key={post.key} post={post} />
               ))}
             </AnimatePresence>
           </div>
         </FadeIn>
       </div>
-    </motion.section>
+    </ViewportFadeSection>
   );
 }
