@@ -51,7 +51,6 @@ function usePredictionText(targetText: string, duration = 1000) {
 
 export function Hero() {
   const [rotatingIndex, setRotatingIndex] = useState(0);
-  const [projectsHovered, setProjectsHovered] = useState(false);
   const { setIsHeroVisible } = useHero();
   const predictedName = usePredictionText(heroName, 1000);
 
@@ -95,10 +94,10 @@ export function Hero() {
               <AnimatePresence mode="wait">
                 <motion.span
                   key={currentRotatingItem.text}
-                  initial={{ x: 50, opacity: 0 }}
+                  initial={{ x: 32, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -50, opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  exit={{ x: -32, opacity: 0 }}
+                  transition={{ duration: 0.45, ease: "easeInOut" }}
                   className="inline-flex"
                 >
                   {currentRotatingItem.kind === "link" ? (
@@ -127,7 +126,7 @@ export function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h1 className="mb-6 text-balance text-5xl font-mono font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
+          <h1 className="mb-6 text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
             <motion.span layoutId="hero-name">{predictedName}</motion.span>
           </h1>
         </FadeIn>
@@ -142,79 +141,30 @@ export function Hero() {
 
         <FadeIn delay={0.3}>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <motion.button
-              onHoverStart={() => setProjectsHovered(true)}
-              onHoverEnd={() => setProjectsHovered(false)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() =>
-                document
-                  .getElementById("projects")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
               }
-              className="group relative h-12 overflow-hidden rounded-lg bg-primary px-8 text-base font-medium text-primary-foreground shadow-sm transition-all duration-300 hover:bg-accent hover:shadow-md"
+              className="h-12 rounded-lg bg-primary px-8 text-base font-medium text-primary-foreground shadow-sm transition-all duration-300 hover:bg-accent hover:shadow-md"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                View{" "}
-                <span className="relative inline-block min-w-[70px]">
-                  <AnimatePresence mode="wait">
-                    {projectsHovered ? (
-                      <motion.span
-                        key="animated"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="inline-flex"
-                      >
-                        {"Projects".split("").map((char, i) => (
-                          <motion.span
-                            key={i}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.04 }}
-                          >
-                            {char}
-                          </motion.span>
-                        ))}
-                      </motion.span>
-                    ) : (
-                      <motion.span
-                        key="static"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        Projects
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </span>
-              </span>
-            </motion.button>
+              View Projects
+            </button>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() =>
-                document
-                  .getElementById("photography")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("photography")?.scrollIntoView({ behavior: "smooth" })
               }
               className="h-12 rounded-lg border border-border bg-secondary px-8 text-base font-medium text-secondary-foreground transition-all duration-300 hover:border-foreground/50 hover:bg-muted hover:shadow-md"
             >
               View Photography
-            </motion.button>
+            </button>
           </div>
         </FadeIn>
       </div>
 
       <FadeIn delay={0.5} className="absolute bottom-8">
         <button
-          onClick={() =>
-            document
-              .getElementById("about")
-              ?.scrollIntoView({ behavior: "smooth" })
-          }
+          onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
           className="flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
           aria-label="Scroll to about section"
         >

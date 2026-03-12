@@ -46,7 +46,7 @@ function BlogCard({ post }: { post: AnimatedPost }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -24 }}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="group flex items-start justify-between gap-4 border-b border-border py-6 last:border-0 rounded-lg px-4 transition-all"
+      className="group flex items-start justify-between gap-4 rounded-lg border-b border-border px-4 py-6 last:border-0"
     >
       <div className="flex-1">
         <div className="mb-2 flex items-center gap-3">

@@ -79,34 +79,23 @@ export function Navigation() {
         >
           <button
             onClick={() => handleNavClick("#home")}
-            className="relative overflow-hidden text-lg font-semibold text-foreground transition-colors hover:text-muted-foreground"
+            className="overflow-hidden text-lg font-semibold text-foreground transition-colors hover:text-muted-foreground"
           >
-            <AnimatePresence mode="wait">
-              {isHeroVisible ? (
+            <AnimatePresence>
+              {!isHeroVisible && (
                 <motion.span
-                  key="us"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="block"
-                >
-                  US
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="fullname"
                   layoutId="hero-name"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
                   className="block"
                 >
                   Udayveer Singh
                 </motion.span>
               )}
             </AnimatePresence>
+            {isHeroVisible && <span className="block">US</span>}
           </button>
 
           <ul className="hidden items-center gap-1 md:flex">

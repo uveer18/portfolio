@@ -54,8 +54,8 @@ export function ViewportFadeSection({
       ref={ref}
       id={id}
       className={cn(className)}
-      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 30 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 24 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
     >
       {children}
     </motion.section>
