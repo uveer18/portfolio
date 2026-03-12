@@ -1,8 +1,9 @@
 "use client";
 
-import { FadeIn, FadeInStagger, FadeInStaggerItem } from "@/components/ui/motion";
+import { FadeIn } from "@/components/ui/motion";
 import { ArrowUpRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
 
 const posts = [
   {
@@ -35,12 +36,15 @@ const posts = [
   },
 ];
 
-function BlogCard({ post }: { post: (typeof posts)[number] }) {
+function BlogCard({ post, isHighlighted }: { post: (typeof posts)[number]; isHighlighted: boolean }) {
   return (
     <motion.article
-      whileHover={{ x: 4 }}
-      transition={{ duration: 0.2 }}
-      className="group flex items-start justify-between gap-4 border-b border-border py-6 last:border-0"
+      animate={{ 
+        scale: isHighlighted ? 1.02 : 1,
+        backgroundColor: isHighlighted ? "var(--color-muted)" : "transparent"
+      }}
+      transition={{ duration: 0.3 }}
+      className="group flex items-start justify-between gap-4 border-b border-border py-6 last:border-0 rounded-lg px-4 transition-all"
     >
       <div className="flex-1">
         <div className="mb-2 flex items-center gap-3">
@@ -62,8 +66,37 @@ function BlogCard({ post }: { post: (typeof posts)[number] }) {
 }
 
 export function Blog() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const isInView = useInView(sectionRef, { 
+    margin: "-33% 0px -33% 0px",
+    amount: 0
+  });
+  const isContainerInView = useInView(containerRef, { amount: 0.3 });
+
+  // Auto-scroll through blog posts when section is in view
+  useEffect(() => {
+    if (!isContainerInView) return;
+    
+    const interval = setInterval(() => {
+      setHighlightedIndex((prev) => (prev + 1) % posts.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [isContainerInView]);
+
   return (
-    <section id="blog" className="px-6 py-24 md:py-32">
+    <motion.section 
+      ref={sectionRef}
+      id="blog" 
+      className="px-6 py-24 md:py-32"
+      animate={{ 
+        opacity: isInView ? 1 : 0,
+        y: isInView ? 0 : 30
+      }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="mx-auto max-w-4xl">
         <FadeIn>
           <div className="mb-16 flex items-center gap-4">
@@ -82,14 +115,44 @@ export function Blog() {
           </p>
         </FadeIn>
 
-        <FadeInStagger className="divide-y divide-border rounded-xl border border-border bg-card p-2">
-          {posts.map((post) => (
-            <FadeInStaggerItem key={post.title} className="px-4">
-              <BlogCard post={post} />
-            </FadeInStaggerItem>
-          ))}
-        </FadeInStagger>
+        <FadeIn>
+          <div 
+            ref={containerRef}
+            className="rounded-xl border border-border bg-card p-2 relative overflow-hidden"
+          >
+            {/* Scroll indicator */}
+            <div className="absolute right-4 top-4 flex gap-1">
+              {posts.map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ 
+                    backgroundColor: i === highlightedIndex 
+                      ? "var(--color-accent)" 
+                      : "var(--color-border)"
+                  }}
+                  className="h-1.5 w-1.5 rounded-full"
+                />
+              ))}
+            </div>
+            
+            <AnimatePresence>
+              {posts.map((post, index) => (
+                <motion.div
+                  key={post.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0,
+                  }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <BlogCard post={post} isHighlighted={index === highlightedIndex} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </FadeIn>
       </div>
-    </section>
+    </motion.section>
   );
 }

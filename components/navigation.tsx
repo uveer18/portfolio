@@ -2,8 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTheme } from "./theme-provider";
+import { useHero } from "./hero-context";
 
 const navLinks = [
   { name: "Home", href: "#home" },
@@ -18,17 +20,22 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [scrollOpacity, setScrollOpacity] = useState(1);
+  const [mounted, setMounted] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const { isHeroVisible } = useHero();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
       
-      // Calculate opacity based on scroll position (fade effect)
       const maxScroll = 200;
       const opacity = Math.max(0.6, 1 - (window.scrollY / maxScroll) * 0.4);
       setScrollOpacity(opacity);
 
-      // Update active section based on scroll position
       const sections = navLinks.map((link) => link.href.substring(1));
       for (const section of sections.reverse()) {
         const element = document.getElementById(section);
@@ -70,16 +77,51 @@ export function Navigation() {
           transition={{ duration: 0.2 }}
           className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6"
         >
-          {/* Logo */}
+          {/* Logo - Animated name */}
           <button
             onClick={() => handleNavClick("#home")}
-            className="text-lg font-semibold text-foreground transition-colors hover:text-muted-foreground"
+            className="relative text-lg font-semibold text-foreground transition-colors hover:text-muted-foreground overflow-hidden"
           >
-            US
+            <AnimatePresence mode="wait">
+              {isHeroVisible ? (
+                <motion.span
+                  key="us"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  US
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="fullname"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  Udayveer Singh
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
 
           {/* Desktop Navigation */}
           <ul className="hidden items-center gap-1 md:flex">
+            <li>
+              <button
+                onClick={toggleTheme}
+                className="mr-2 rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                aria-label="Toggle theme"
+              >
+                {mounted && theme === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </button>
+            </li>
             {navLinks.map((link) => (
               <li key={link.name}>
                 <button
@@ -131,6 +173,19 @@ export function Navigation() {
           >
             <nav className="mx-auto max-w-6xl px-6 py-4">
               <ul className="flex flex-col gap-1">
+                <li>
+                  <button
+                    onClick={toggleTheme}
+                    className="flex w-full items-center gap-2 rounded-lg px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    {mounted && theme === "dark" ? (
+                      <Sun className="h-4 w-4" />
+                    ) : (
+                      <Moon className="h-4 w-4" />
+                    )}
+                    {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
+                  </button>
+                </li>
                 {navLinks.map((link) => (
                   <li key={link.name}>
                     <button
