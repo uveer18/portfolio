@@ -2,8 +2,8 @@
 
 @theme inline {
   --radius: 0.75rem;
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 /* Dark theme (default) */
@@ -46,48 +46,6 @@
   --color-destructive-foreground: #fafafa;
   --color-highlight: rgba(0, 0, 0, 0.08);
   --color-highlight-border: rgba(0, 0, 0, 0.2);
-}
-
-/* Glitch animation for name */
-@keyframes glitch {
-  0% {
-    transform: translate(0);
-    text-shadow: none;
-  }
-  20% {
-    transform: translate(-2px, 2px);
-    text-shadow: 2px 0 #ff0040, -2px 0 #00ffff;
-  }
-  40% {
-    transform: translate(-2px, -2px);
-    text-shadow: -2px 0 #ff0040, 2px 0 #00ffff;
-  }
-  60% {
-    transform: translate(2px, 2px);
-    text-shadow: 2px 0 #00ffff, -2px 0 #ff0040;
-  }
-  80% {
-    transform: translate(2px, -2px);
-    text-shadow: -2px 0 #00ffff, 2px 0 #ff0040;
-  }
-  100% {
-    transform: translate(0);
-    text-shadow: none;
-  }
-}
-
-.glitch-active {
-  animation: glitch 0.3s ease-in-out;
-}
-
-/* Cursor blink animation */
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-.cursor-blink {
-  animation: blink 0.8s infinite;
 }
 
 * {

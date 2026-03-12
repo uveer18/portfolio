@@ -2,168 +2,132 @@
 
 import { FadeIn } from "@/components/ui/motion";
 import { ArrowDown } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHero } from "@/components/hero-context";
 
-// Rotating info items for the subtitle area
-const infoItems = [
-  { type: "info", text: "IT'28 @ NITJ" },
-  { type: "project", text: "LensIQ", href: "#projects" },
-  { type: "blog", text: "Deep Learning in Photography", href: "#blog" },
-  { type: "project", text: "PhotoCompAI", href: "#projects" },
-];
+const heroName = "Udayveer Singh";
+const predictionChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
 
-// Text prediction animation - scrambles text before revealing
-function useTextPrediction(targetText: string, isActive: boolean, duration: number = 1500) {
+const rotatingItems = [
+  { kind: "text", text: "NITJ" },
+  { kind: "link", text: "Read blog", href: "#blog" },
+] as const;
+
+function usePredictionText(targetText: string, duration = 1000) {
   const [displayText, setDisplayText] = useState(targetText);
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-  
+
   useEffect(() => {
-    if (!isActive) {
-      setDisplayText(targetText);
-      return;
-    }
-    
-    const steps = 8;
-    const stepDuration = duration / steps;
+    const steps = 12;
+    const stepDuration = Math.floor(duration / steps);
     let currentStep = 0;
-    
+
     const interval = setInterval(() => {
-      currentStep++;
+      currentStep += 1;
       if (currentStep >= steps) {
         setDisplayText(targetText);
         clearInterval(interval);
         return;
       }
-      
-      // Calculate how many characters should be revealed
-      const revealedCount = Math.floor((currentStep / steps) * targetText.length);
-      
-      // Build scrambled text
-      let result = "";
-      for (let i = 0; i < targetText.length; i++) {
-        if (i < revealedCount) {
-          result += targetText[i];
-        } else if (targetText[i] === " ") {
-          result += " ";
-        } else {
-          result += chars[Math.floor(Math.random() * chars.length)];
-        }
-      }
-      setDisplayText(result);
+
+      const revealCount = Math.floor((currentStep / steps) * targetText.length);
+      const scrambled = targetText
+        .split("")
+        .map((char, index) => {
+          if (char === " ") return " ";
+          if (index < revealCount) return char;
+          return predictionChars[Math.floor(Math.random() * predictionChars.length)];
+        })
+        .join("");
+
+      setDisplayText(scrambled);
     }, stepDuration);
-    
+
     return () => clearInterval(interval);
-  }, [targetText, isActive, duration]);
-  
+  }, [duration, targetText]);
+
   return displayText;
 }
 
 export function Hero() {
-  const [currentInfoIndex, setCurrentInfoIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [nameAnimationActive, setNameAnimationActive] = useState(true);
-  const [projectsHovered, setProjectsHovered] = useState(false);
-  const [photographyHovered, setPhotographyHovered] = useState(false);
-  const nameRef = useRef<HTMLHeadingElement>(null);
-  const { setIsHeroVisible, setHeroNamePosition } = useHero();
-  
-  const displayedName = useTextPrediction("Udayveer Singh", nameAnimationActive, 2000);
+  const [rotatingIndex, setRotatingIndex] = useState(0);
+  const { setIsHeroVisible } = useHero();
+  const predictedName = usePredictionText(heroName, 1000);
 
-  // Update hero visibility and name position for navigation animation
   useEffect(() => {
-    const handleScroll = () => {
+    const updateHeroVisibility = () => {
       const heroSection = document.getElementById("home");
-      if (heroSection) {
-        const rect = heroSection.getBoundingClientRect();
-        const isVisible = rect.bottom > 100;
-        setIsHeroVisible(isVisible);
-      }
-      
-      if (nameRef.current) {
-        const rect = nameRef.current.getBoundingClientRect();
-        setHeroNamePosition({ x: rect.left, y: rect.top });
-      }
+      if (!heroSection) return;
+      const rect = heroSection.getBoundingClientRect();
+      setIsHeroVisible(rect.bottom > 90);
     };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [setIsHeroVisible, setHeroNamePosition]);
+    updateHeroVisibility();
+    window.addEventListener("scroll", updateHeroVisibility, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeroVisibility);
+  }, [setIsHeroVisible]);
 
-  // Disable name animation after initial load
-  useEffect(() => {
-    const timer = setTimeout(() => setNameAnimationActive(false), 2500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Rotate through info items every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setCurrentInfoIndex((prev) => (prev + 1) % infoItems.length);
-        setIsTransitioning(false);
-      }, 500);
+      setRotatingIndex((prev) => (prev + 1) % rotatingItems.length);
     }, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
-  const currentInfo = infoItems[currentInfoIndex];
-
-  const handleInfoClick = () => {
-    if (currentInfo.href) {
-      document.getElementById(currentInfo.href.substring(1))?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  const currentRotatingItem = useMemo(() => rotatingItems[rotatingIndex], [rotatingIndex]);
 
   return (
     <section
       id="home"
       className="relative flex min-h-screen flex-col items-center justify-center px-6 py-24"
     >
-      {/* Subtle gradient background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-accent/5 blur-[100px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-4xl text-center">
         <FadeIn>
-          {/* Rotating info badge */}
-          <div className="mb-4 flex items-center justify-center">
-            <div className="relative h-6 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.button
-                  key={currentInfoIndex}
-                  initial={{ x: 50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -50, opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  onClick={handleInfoClick}
-                  className={`text-sm font-medium uppercase tracking-widest ${
-                    currentInfo.href 
-                      ? "cursor-pointer text-accent hover:text-accent/80" 
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {currentInfo.text}
-                </motion.button>
-              </AnimatePresence>
-            </div>
-          </div>
-          
           <p className="mb-2 text-sm font-medium uppercase tracking-widest text-muted-foreground">
-            Aspiring Machine Learning Engineer & Photographer
+            IT&apos;28 Student at{" "}
+            <span className="relative inline-flex min-w-24 overflow-hidden align-bottom text-accent">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={currentRotatingItem.text}
+                  initial={{ x: 32, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -32, opacity: 0 }}
+                  transition={{ duration: 0.45, ease: "easeInOut" }}
+                  className="inline-flex"
+                >
+                  {currentRotatingItem.kind === "link" ? (
+                    <a
+                      href={currentRotatingItem.href}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        document
+                          .getElementById(currentRotatingItem.href.substring(1))
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className="underline-offset-4 hover:underline"
+                    >
+                      {currentRotatingItem.text}
+                    </a>
+                  ) : (
+                    currentRotatingItem.text
+                  )}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+          </p>
+          <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+            Aspiring Machine Learning Engineer
           </p>
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h1 
-            ref={nameRef}
-            className="mb-6 text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl font-mono"
-          >
-            {displayedName}
+          <h1 className="mb-6 text-balance text-5xl font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
+            <motion.span layoutId="hero-name">{predictedName}</motion.span>
           </h1>
         </FadeIn>
 
@@ -177,84 +141,30 @@ export function Hero() {
 
         <FadeIn delay={0.3}>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            {/* View Projects Button */}
-            <motion.button
-              onHoverStart={() => setProjectsHovered(true)}
-              onHoverEnd={() => setProjectsHovered(false)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() =>
-                document
-                  .getElementById("projects")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
               }
-              className="group relative h-12 overflow-hidden rounded-lg bg-primary px-8 text-base font-medium text-primary-foreground shadow-sm transition-all duration-300 hover:bg-accent hover:shadow-md"
+              className="h-12 rounded-lg bg-primary px-8 text-base font-medium text-primary-foreground shadow-sm transition-all duration-300 hover:bg-accent hover:shadow-md"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                View{" "}
-                <span className="relative inline-block min-w-[70px]">
-                  <AnimatePresence mode="wait">
-                    {projectsHovered ? (
-                      <motion.span
-                        key="animated"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="inline-flex"
-                      >
-                        {"Projects".split("").map((char, i) => (
-                          <motion.span
-                            key={i}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.04 }}
-                          >
-                            {char}
-                          </motion.span>
-                        ))}
-                      </motion.span>
-                    ) : (
-                      <motion.span
-                        key="static"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        Projects
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </span>
-              </span>
-            </motion.button>
+              View Projects
+            </button>
 
-            {/* View Photography Button */}
-            <motion.button
-              onHoverStart={() => setPhotographyHovered(true)}
-              onHoverEnd={() => setPhotographyHovered(false)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={() =>
-                document
-                  .getElementById("photography")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                document.getElementById("photography")?.scrollIntoView({ behavior: "smooth" })
               }
               className="h-12 rounded-lg border border-border bg-secondary px-8 text-base font-medium text-secondary-foreground transition-all duration-300 hover:border-foreground/50 hover:bg-muted hover:shadow-md"
             >
               View Photography
-            </motion.button>
+            </button>
           </div>
         </FadeIn>
       </div>
 
-      {/* Scroll indicator */}
       <FadeIn delay={0.5} className="absolute bottom-8">
         <button
-          onClick={() =>
-            document
-              .getElementById("about")
-              ?.scrollIntoView({ behavior: "smooth" })
-          }
+          onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
           className="flex flex-col items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
           aria-label="Scroll to about section"
         >
