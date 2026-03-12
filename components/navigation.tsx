@@ -19,7 +19,12 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [scrollOpacity, setScrollOpacity] = useState(1);
+  const [mounted, setMounted] = useState(false);
   const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,7 +94,7 @@ export function Navigation() {
                 className="mr-2 rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label="Toggle theme"
               >
-                {theme === "dark" ? (
+                {mounted && theme === "dark" ? (
                   <Sun className="h-4 w-4" />
                 ) : (
                   <Moon className="h-4 w-4" />
@@ -147,6 +152,19 @@ export function Navigation() {
           >
             <nav className="mx-auto max-w-6xl px-6 py-4">
               <ul className="flex flex-col gap-1">
+                <li>
+                  <button
+                    onClick={toggleTheme}
+                    className="flex w-full items-center gap-2 rounded-lg px-4 py-3 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    {mounted && theme === "dark" ? (
+                      <Sun className="h-4 w-4" />
+                    ) : (
+                      <Moon className="h-4 w-4" />
+                    )}
+                    {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
+                  </button>
+                </li>
                 {navLinks.map((link) => (
                   <li key={link.name}>
                     <button
